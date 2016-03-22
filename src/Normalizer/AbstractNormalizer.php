@@ -1,7 +1,7 @@
 <?php namespace Firebase\Normalizer;
 
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractNormalizer implements NormalizerInterface {
 
@@ -14,4 +14,4 @@ abstract class AbstractNormalizer implements NormalizerInterface {
         return $this->name;
     }
 
-} 
+}
