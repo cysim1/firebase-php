@@ -95,6 +95,18 @@ class Firebase implements FirebaseMethods
          return $this->handleResponse($response);
      }
 
+     /**
+      * Read data from path
+      * @param $path
+      * @param Criteria $crtiera
+      * @return mixed
+      */
+      public function getBatch($path = '', Criteria $criteria = null)
+      {
+          list($path, $value) = $this->evaluatePathValueArguments(array($path, $criteria));
+          return $this->client->getAsync($this->buildUrl($path), $this->buildOptions($value));
+      }
+
     /**
      * Set data in path
      * @param $path
@@ -106,6 +118,18 @@ class Firebase implements FirebaseMethods
         list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
         $response = $this->client->put($this->buildUrl($path), $this->buildOptions($value));
         return $this->handleResponse($response);
+    }
+
+    /**
+     * Set data in path
+     * @param $path
+     * @param $value
+     * @return mixed
+     */
+    public function setBatch($path, $value = self::NULL_ARGUMENT)
+    {
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
+        return $this->client->putAsync($this->buildUrl($path), $this->buildOptions($value));
     }
 
     /**
@@ -122,6 +146,18 @@ class Firebase implements FirebaseMethods
     }
 
     /**
+     * Update exising data in path
+     * @param $path
+     * @param $value
+     * @return mixed
+     */
+    public function updateBatch($path, $value = self::NULL_ARGUMENT)
+    {
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
+        return $this->client->patchAsync($this->buildUrl($path), $this->buildOptions($value));
+    }
+
+    /**
      * Delete item in path
      * @param $path
      * @return mixed
@@ -129,8 +165,19 @@ class Firebase implements FirebaseMethods
     public function delete($path = '')
     {
         list($path, $value) = $this->evaluatePathValueArguments(array($path));
-        $response = $this->client->put($this->buildUrl($path), $this->buildOptions($value));
+        $response = $this->client->delete($this->buildUrl($path), $this->buildOptions($value));
         return $this->handleResponse($response);
+    }
+
+    /**
+     * Delete item in path
+     * @param $path
+     * @return mixed
+     */
+    public function deleteBatch($path = '')
+    {
+        list($path, $value) = $this->evaluatePathValueArguments(array($path));
+        return $this->client->deleteAsync($this->buildUrl($path), $this->buildOptions($value));
     }
 
     /**
@@ -144,6 +191,18 @@ class Firebase implements FirebaseMethods
         list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
         $request = $this->post($this->buildUrl($path), $this->buildOptions($value));
         return $this->handleResponse($request);
+    }
+
+    /**
+     * Push item to path
+     * @param $path
+     * @param $value
+     * @return mixed
+     */
+    public function pushBatch($path, $value = self::NULL_ARGUMENT)
+    {
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
+        return $this->postAsync($this->buildUrl($path), $this->buildOptions($value));
     }
 
     /**
@@ -278,24 +337,11 @@ class Firebase implements FirebaseMethods
         return $options;
     }
 
-
-    public function batch($callable)
+    public function batch($callable, $options = [])
     {
-        //enable batching in the config
-        $this->setOption('batch', true);
-
         //gather requests
-        call_user_func_array($callable, array($this));
-
-        $requests = $this->requests;
-
-        $emitter = $this->client->getEmitter();
-        $emitter->emit('requests.batched', new RequestsBatchedEvent($requests));
-
-        //reset the requests for the next batch
-        $this->requests = [];
-
-        return $requests;
+        $requests = call_user_func_array($callable, array($this));
+        return Pool::batch($this->client, $requests, $options);
     }
 
     /**
@@ -318,5 +364,4 @@ class Firebase implements FirebaseMethods
             $this->setClient(call_user_func(static::$clientResolver, $this->getOptions()));
         }
     }
-
 }

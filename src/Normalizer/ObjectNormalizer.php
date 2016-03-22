@@ -8,7 +8,7 @@ class ObjectNormalizer extends AbstractNormalizer implements NormalizerInterface
 
     public function normalize(ResponseInterface $response)
     {
-        return $response->json(array('object' => true));
+        return json_decode($response->getBody()->__toString(), false);
     }
 
 }

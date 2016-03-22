@@ -9,7 +9,7 @@ class SimpleArrayNormalizer extends AbstractNormalizer implements NormalizerInte
 
     public function normalize(ResponseInterface $response)
     {
-        return array_values($response->json());
+        return array_values(json_decode($response->getBody()->__toString(), true));
     }
 
 }
