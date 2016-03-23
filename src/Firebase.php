@@ -8,7 +8,7 @@ use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Query;
-use GuzzleHttp\Pool;
+use GuzzleHttp\Promise;
 
 class Firebase implements FirebaseMethods
 {
@@ -342,7 +342,7 @@ class Firebase implements FirebaseMethods
     {
         //gather requests
         $requests = call_user_func_array($callable, array($this));
-        return Pool::batch($this->client, $requests, $options);
+        return Promise\unwrap($requests);
     }
 
     /**
