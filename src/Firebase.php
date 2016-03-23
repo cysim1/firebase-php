@@ -8,6 +8,7 @@ use GuzzleHttp\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Query;
+use GuzzleHttp\Pool;
 
 class Firebase implements FirebaseMethods
 {
