@@ -163,9 +163,9 @@ class Firebase implements FirebaseMethods
      * @param $path
      * @return mixed
      */
-    public function delete($path = '')
+    public function delete($path = '', $value = null)
     {
-        list($path, $value) = $this->evaluatePathValueArguments(array($path));
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
         $response = $this->client->delete($this->buildUrl($path), $this->buildOptions($value));
         return $this->handleResponse($response);
     }
@@ -175,9 +175,9 @@ class Firebase implements FirebaseMethods
      * @param $path
      * @return mixed
      */
-    public function deleteBatch($path = '')
+    public function deleteBatch($path = '', $value = null)
     {
-        list($path, $value) = $this->evaluatePathValueArguments(array($path));
+        list($path, $value) = $this->evaluatePathValueArguments(array($path, $value));
         return $this->client->deleteAsync($this->buildUrl($path), $this->buildOptions($value));
     }
 
